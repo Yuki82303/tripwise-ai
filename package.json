@@ -1,0 +1,18 @@
+{
+  "name": "tripwise-ai-demo",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=18 <23"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node server.mjs",
+    "build": "node scripts/build.mjs",
+    "photos:download": "node scripts/download-photos.mjs",
+    "preview": "node server.mjs dist",
+    "test": "node --test",
+    "diagnose:live": "node scripts/diagnose-live.mjs"
+  }
+}

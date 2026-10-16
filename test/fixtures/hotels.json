@@ -1,0 +1,5 @@
+{
+  "search_metadata": { "status": "Success" },
+  "search_parameters": { "engine": "google_hotels", "q": "Chicago, IL hotels", "currency": "USD", "check_in_date": "2026-11-06", "check_out_date": "2026-11-08", "adults": 2 },
+  "properties": [{ "type": "hotel", "name": "Fixture Hotel", "rate_per_night": { "extracted_lowest": 130 }, "total_rate": { "extracted_lowest": 286, "extracted_before_taxes_fees": 260 }, "prices": [{ "source": "Fixture Provider", "total_rate": { "extracted_lowest": 286 } }], "overall_rating": 4.2, "reviews": 58, "link": "https://www.google.com/travel/hotels" }]
+}

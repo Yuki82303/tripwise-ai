@@ -1,0 +1,31 @@
+# TripWise AI — data sources and confidence
+
+Updated 2026-10-16. Every label describes one piece of evidence, not the whole destination. An API adapter being implemented and mock-tested does not mean a live account connection was verified.
+
+| Content | Source and scope | Freshness / confidence |
+| --- | --- | --- |
+| Destination traits and seasons | Forty local editorial profiles in `src/data.js` | Curated, undated. Not a live guide or objective travel rating. |
+| Model cost and initial travel ease | `src/engine.js` distance and daily-cost assumptions | Recomputed per input. **Modeled Estimate** only. |
+| Selected round-trip flight | [Google Flights via SerpApi](https://serpapi.com/google-flights-api), with matching outbound and `departure_token` return response | **Live Price** at checked timestamp or **Cached Price** for at most 6 h. Group total is usable only for one traveler; multiplying the returned number for multiple adults is provisional and excluded from budget ranking. Incomplete return = **Unavailable**. |
+| Selected hotel | [Google Hotels via SerpApi](https://serpapi.com/google-hotels-api), matching dates, guests and full-stay total | Live/Cached as above. One property offer, not representative city price. Three or more travelers skip this search because room capacity cannot be confirmed. A property link may not preserve the quote. |
+| Local expenses and buffer after quote | Destination's demo daily spend × people × days, plus 10% safety buffer | **Estimated Costs**. Thus even a flight + hotel quote yields an **estimated trip total**, not a verified booking total. |
+| Community search | [Google Search via SerpApi](https://serpapi.com/search-api), restricted to source-linked Reddit results | 24 h cache. Title, URL, optional indexed date, short Google search preview and keyword-based topic; **not verified Reddit quotation, consensus, votes, comment count or popularity**. |
+| Manually curated voices | Empty `data/reddit_manual_quotes.json` and `data/xiaohongshu_manual_quotes.json` | Human source review required. Format validation does not prove quote authenticity or rights. |
+| Rail corridor | [Amtrak](https://www.amtrak.com/northeast-regional-train) / LA Metro public operator pages in `src/data.js` | **Official source** for corridor coverage only; date-specific service, fare, transfers and duration unverified. |
+| Short-range weather | [US NWS API](https://www.weather.gov/documentation/services-web-API) | User opening relevant detail triggers forecast within 7 days; 30 min cache. Else curated season note. |
+| Photos | [Wikimedia Commons](https://commons.wikimedia.org/) individual file pages | **Public source** with each author/license in card and [image inventory](image-attribution.md). Online image fallback may fail. |
+| AI preference extraction | [Gemini generateContent](https://ai.google.dev/api/generate-content), or local rules/Ollama/legacy OpenAI | Gemini only after click and key configuration. Default `gemini-3.5-flash-lite` is called directly, with server-side model override. The JSON enum `APPLICATION_JSON` is used for `responseFormat.text.mimeType`. [Official pricing](https://ai.google.dev/gemini-api/docs/pricing) lists a free tier; account plan and quota must be checked separately. AI cannot supply travel prices or reviews. |
+
+## Integrity rules
+
+`src/sources.js` defines Official/Public/Curated/Modeled/Community/Search preview/Provisional plus Live Price and Cached Price badges. `Data Confidence` remains separate from the four-factor model score. All external text and links are escaped or checked against allowed HTTPS hosts before rendering. SerpApi's [official MCP integration](https://serpapi.com/integrations/mcp) sends the key in an `Authorization` header; Gemini sends it in `x-goog-api-key`. Credentials are never in browser assets or source links. The server's static allowlist blocks `.env` and server modules.
+
+The two-stage ranking uses local profiles first. After an explicit live-price click, a complete round-trip flight plus full-stay hotel total can update Budget Fit and Travel Ease. Preference Fit and Trip Experience remain local model components. A quote-supported midpoint over a strict budget moves to the separate stretch tier. Missing quotes, No Flights, no-car limits, unknown ground routes and unverified direct flights are never silently promoted. The app does not use community snippets as a score signal.
+
+## Community policy
+
+The discussion search stores only a short Google search preview and the underlying public Reddit URL. It makes no direct Reddit Data API call, no login or CAPTCHA bypass, and no claim that snippets are verbatim Reddit comments. Its topic labels come from visible search-result words, not AI-generated sentiment. There is no “Popular Discussions” label without verified engagement metrics. Xiaohongshu remains a manual import path; the UI links to a public Google search for its indexed pages, with no automated import. Manual JSON requires a known destination ID, 12–220-character quote, theme, ISO date, note title and direct HTTPS platform link. Review source context and reuse rights before adding one; remove deleted material. No quote is shipped by default.
+
+## API costs and known gaps
+
+User-triggered price checks query at most two current candidates by default: two flight searches (including return selection) plus one hotel search each, normally **up to six SerpApi searches**. A discussion check adds one. The app caches prices 6 h and discussions 24 h in memory. It persists a conservative local UTC daily search count, default cap eight; this is not SerpApi's official remaining quota. A user-run diagnostic returned HTTP 200 and an extractable outbound Google Flights result, but did not verify the return leg or group fare. A simple Gemini request previously returned HTTP 200, while the earlier structured request returned 400 for an invalid MIME enum; that enum has been corrected but a full structured response remains unverified. Current development DNS cannot reach either provider, and the local SerpApi counter is 8/8 for 2026-10-16 UTC, so no new provider requests were sent. No live rail/coach fare, airport-ground-transfer fee, venue-wide review feed, verified Reddit engagement, hotel inventory guarantee, or fully live trip total is available.

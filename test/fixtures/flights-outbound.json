@@ -1,0 +1,5 @@
+{
+  "search_metadata": { "status": "Success", "google_flights_url": "https://www.google.com/travel/flights" },
+  "search_parameters": { "engine": "google_flights", "departure_id": "JFK", "arrival_id": "ORD", "outbound_date": "2026-11-06", "return_date": "2026-11-08", "type": 1, "adults": 2, "currency": "USD" },
+  "best_flights": [{ "flights": [{ "departure_airport": { "id": "JFK", "name": "John F. Kennedy International Airport", "time": "2026-11-06 09:00" }, "arrival_airport": { "id": "ORD", "name": "O'Hare International Airport", "time": "2026-11-06 10:40" }, "airline": "Example Air", "duration": 160 }], "total_duration": 160, "price": 220, "type": "Round trip", "departure_token": "fixture-return-token" }]
+}
